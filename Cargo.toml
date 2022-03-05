@@ -16,7 +16,7 @@ anyhow = "1.0.55"
 # uuid = "0.8.2"
 uuid = { version = "0.8.1", features = ["v4", "serde"] }
 argon2 = "0.3.4"
-sqlx = "0.5.11"
+sqlx = "0.5.11" # error, some features must enable
 urlencoding = "2.1.0"
 htmlescape = "0.3"
 hmac = { version = "0.11", features = ["std"] }
