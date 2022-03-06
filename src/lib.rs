@@ -1,9 +1,10 @@
 // pub mod authentication;
 
+use actix_web::dev::Server;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder}; //HttpRequest,
 
 async fn health_check() -> impl Responder {
-    HttpResponse::Ok()
+    HttpResponse::Ok().finish()
 }
 
 // async fn greet(req: HttpRequest) -> impl Responder {
@@ -11,15 +12,10 @@ async fn health_check() -> impl Responder {
 //     format!("Hello {}!", &name)
 // }
 
-pub async fn run() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            // .route("/", web::get().to(greet))
-            .route("/health_check", web::get().to(health_check))
-        //order matters
-        // .route("/{name}", web::get().to(greet))
-    })
-    .bind("127.0.0.1:8000")?
-    .run()
-    .await
+pub fn run() -> Result<Server, std::io::Error> {
+    let server = HttpServer::new(|| App::new().route("/health_check", web::get().to(health_check)))
+        .bind("127.0.0.1:8000")?
+        .run();
+    // No .await here!
+    Ok(server)
 }

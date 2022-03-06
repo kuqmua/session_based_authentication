@@ -28,5 +28,5 @@ use session_based_authentication::run;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    run().await
+    run()?.await
 }
