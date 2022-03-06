@@ -58,3 +58,6 @@ uuid = {version = "0.8.1", features = ["v4", "serde"]}
 # branch = "rework-actix-session"
 # features = ["redis-rs-tls-session"]
 # git = "https://github.com/LukeMathWalker/actix-extras"
+
+[dev-dependencies]
+reqwest = "0.11"
