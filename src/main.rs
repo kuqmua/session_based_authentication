@@ -1,3 +1,13 @@
+pub mod routes {
+    pub mod home;
+}
+pub mod startup;
+
+use crate::startup::run;
+
+// #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 fn main() {
-    println!("Hello, world!");
+    if let Err(e) = run() {
+        println!("run error {:#?}", e);
+    }
 }
