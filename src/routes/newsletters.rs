@@ -1,4 +1,6 @@
+use crate::authentication::AuthError;
 use actix_web::{web, HttpResponse};
+use secrecy::Secret;
 
 #[tracing::instrument(
     name = "Publish a newsletter issue",
@@ -24,7 +26,7 @@ async fn validate_credentials(
     // which is a specific error type detailing
     // the relevant failure modes of `POST /newsletters`
     // (not just auth!)
-) -> Result<uuid::Uuid, PublishError> {
+) -> Result<uuid::Uuid, Result<uuid::Uuid, AuthError>> {
     let mut user_id = None;
     let mut expected_password_hash = Secret::new(
         "$argon2id$v=19$m=15000,t=2,p=1$\
