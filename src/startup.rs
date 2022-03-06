@@ -4,7 +4,7 @@ use actix_web::HttpServer;
 
 use crate::routes::home::home;
 use crate::routes::login::login;
-// use crate::routes::login::login_form;
+use crate::routes::login::login_form;
 //
 // fn run(/* */) -> Result</* */> {
 //     let server = HttpServer::new(move || {
@@ -17,7 +17,7 @@ use crate::routes::login::login;
 pub async fn run() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            // .route("/login", web::get().to(login_form))
+            .route("/login_form", web::get().to(login_form))
             .route("/login", web::post().to(login))
             .route("/", web::get().to(home))
     })
