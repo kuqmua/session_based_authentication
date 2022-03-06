@@ -22,5 +22,5 @@ async fn health_check_works() {
 
 // Launch our application in the background ~somehow~
 async fn spawn_app() -> std::io::Result<()> {
-    todo!()
+    session_based_authentication::run().await
 }
