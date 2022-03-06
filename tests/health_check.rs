@@ -1,19 +1,26 @@
 // use session_based_authentication::main;
 
-#[test]
-fn dummy_test() {
-    assert_eq!(2, 2)
+#[tokio::test]
+async fn health_check_works() {
+    // Arrange
+    spawn_app().await.expect("Failed to spawn our app.");
+    // We need to bring in `reqwest`
+    // to perform HTTP requests against our application.
+    let client = reqwest::Client::new();
+
+    // Act
+    let response = client
+        .get("http://127.0.0.1:8000/health_check")
+        .send()
+        .await
+        .expect("Failed to execute request.");
+
+    // Assert
+    assert!(response.status().is_success());
+    assert_eq!(Some(0), response.content_length());
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use crate::health_check;
-
-//     #[tokio::test]
-//     async fn health_check_succeeds() {
-//         let response = health_check().await;
-//         // This requires changing the return type of `health_check`
-//         // from `impl Responder` to `HttpResponse` to compile
-//         assert!(response.status().is_success())
-//     }
-// }
+// Launch our application in the background ~somehow~
+async fn spawn_app() -> std::io::Result<()> {
+    todo!()
+}
