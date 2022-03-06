@@ -5,6 +5,16 @@ version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+# We could use any path here, but we are following the community convention
+# We could specify a library name using the `name` field. If unspecified,
+# cargo will default to `package.name`, which is what we want.
+path = "src/lib.rs"
+
+[[bin]]
+name = "session_based_authentication"
+path = "src/main.rs"
+
 [dependencies]
 actix-session = "0.5.0"
 actix-web = "4"
@@ -33,18 +43,18 @@ urlencoding = "2.1.0"
 uuid = {version = "0.8.1", features = ["v4", "serde"]}
 
 # [dependencies.reqwest]
-# version = "0.11"
 # default-features = false
 # features = ["json", "rustls-tls", "cookies"]
+# version = "0.11"
 
 # [dependencies.actix-session]
 # # We are using a fork of `actix-session` that provides a more
 # # composable API for session storage backends + TLS/auth support 
 # # when using the Redis backend
-# git = "https://github.com/LukeMathWalker/actix-extras"
 # branch = "rework-actix-session"
+# git = "https://github.com/LukeMathWalker/actix-extras"
 
 # [dependencies.actix-session]
-# git = "https://github.com/LukeMathWalker/actix-extras"
 # branch = "rework-actix-session"
 # features = ["redis-rs-tls-session"]
+# git = "https://github.com/LukeMathWalker/actix-extras"

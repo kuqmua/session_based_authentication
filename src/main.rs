@@ -18,7 +18,7 @@
 
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 
-async fn health_check(req: HttpRequest) -> impl Responder {
+async fn health_check() -> impl Responder {
     HttpResponse::Ok()
 }
 
@@ -39,4 +39,11 @@ async fn main() -> std::io::Result<()> {
     .bind("127.0.0.1:8000")?
     .run()
     .await
+}
+
+#[cfg(test)]
+mod tests {
+    // Import the code I want to test
+    use super::*;
+    // My tests
 }
