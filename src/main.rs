@@ -1,6 +1,7 @@
 pub mod routes {
     pub mod home;
     pub mod login;
+    // pub mod newsletters;
 }
 pub mod startup;
 
