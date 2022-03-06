@@ -14,7 +14,7 @@ use crate::routes::home::home;
 #[actix_web::main]
 pub async fn run() -> std::io::Result<()> {
     HttpServer::new(|| App::new().route("/", web::get().to(home)))
-        .bind("127.0.0.1:8080")?
+        .bind("127.0.0.1:8000")?
         .run()
         .await
 }
