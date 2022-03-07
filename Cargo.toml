@@ -34,13 +34,25 @@ serde = {version = "1", features = ["derive"]}
 serde_derive = "1.0"
 serde_json = "1.0.79"
 sha2 = "0.10"
-sqlx = {version = "0.5.11", features = [
-  "runtime-actix-native-tls", # ,  # "runtime-async-std-native-tls",  # "runtime-tokio-native-tls",  # "runtime-actix-rustls",  # "runtime-async-std-rustls",  # "runtime-tokio-rustls",
-]}# error, some features must enable
+# sqlx = {version = "0.5.11", features = [
+#   "runtime-actix-native-tls", # ,  # "runtime-async-std-native-tls",  # "runtime-tokio-native-tls",  # "runtime-actix-rustls",  # "runtime-async-std-rustls",  # "runtime-tokio-rustls",
+# ]}# error, some features must enable
 time = "0.2"
 tokio = {version = "1", features = ["macros", "rt-multi-thread"]}
 urlencoding = "2.1.0"
 uuid = {version = "0.8.1", features = ["v4", "serde"]}
+
+[dependencies.sqlx]
+default-features = false
+features = [
+  "runtime-actix-rustls",
+  "macros",
+  "postgres",
+  "uuid",
+  "chrono",
+  "migrate",
+]
+version = "0.5.7"
 
 # [dependencies.reqwest]
 # default-features = false
