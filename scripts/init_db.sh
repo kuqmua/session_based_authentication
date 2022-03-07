@@ -48,7 +48,7 @@ done
 # fi
 ######################
 
-export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@l127.0.0.1:${DB_PORT}/${DB_NAME}
+export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@127.0.0.1:${DB_PORT}/${DB_NAME}
 
 if ! [ -x "$(command sqlx database create)" ]; then 
     echo >&2 "Error: sqlx database create"
