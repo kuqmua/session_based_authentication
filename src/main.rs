@@ -23,14 +23,17 @@ mod tests {
     // My tests
 }
 
-use std::net::TcpListener;
+// mod configuration;
 
-////////////////////
+use session_based_authentication::configuration::get_configuration;
 use session_based_authentication::run;
+use std::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:8000").expect("Failed to bind random port");
+    let configuration = get_configuration().expect("Failed to read configuration.");
+    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let listener = TcpListener::bind(address).expect("Failed to bind random port");
     // We retrieve the port assigned to us by the OS
     run(listener)?.await
 }
