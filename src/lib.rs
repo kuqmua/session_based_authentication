@@ -1,3 +1,7 @@
+pub mod configuration;
+pub mod routes;
+pub mod startup;
+
 // pub mod authentication;
 
 use actix_web::dev::Server;
