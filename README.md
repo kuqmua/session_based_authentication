@@ -1,6 +1,9 @@
 # session_based_authentication
 by tutorial https://www.lpalmieri.com/posts/session-based-authentication-in-rust/
 
+### start deleopment 
+cargo watch -x check -x test -x "run"
+
 ### launch Postgres
 sudo ./scripts/init_db.sh
 (sudo coz got pesmission denied error)
