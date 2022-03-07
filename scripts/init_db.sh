@@ -48,12 +48,12 @@ done
 # fi
 ######################
 
-# if ! [ -x "$(command -v psql)" ]; then # do something like that
-#   echo >&2 "Error: psql is not installed."
-#   exit 1
-# fi
 export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@l127.0.0.1:${DB_PORT}/${DB_NAME}
-sqlx database create
 
-export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@127.0.0.1:${DB_PORT}/${DB_NAME}
-sqlx migrate add create_subscriptions_table
+if ! [ -x "$(command sqlx database create)" ]; then 
+    echo >&2 "Error: sqlx database create"
+fi
+
+if ! [ -x "$(command sqlx migrate add create_subscriptions_table)" ]; then 
+    echo >&2 "Error: sqlx migrate add create_subscriptions_table"
+fi
