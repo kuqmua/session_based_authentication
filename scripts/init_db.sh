@@ -2,14 +2,24 @@
 set -x
 set -eo pipefail
 
+
+# # Check if a custom user has been set, otherwise default to 'postgres'
+# DB_USER=${POSTGRES_USER:=postgres}
+# # Check if a custom password has been set, otherwise default to 'password'
+# DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
+# # Check if a custom database name has been set, otherwise default to 'newsletter'
+# DB_NAME="${POSTGRES_DB:=newsletter}"
+# # Check if a custom port has been set, otherwise default to '5432'
+# DB_PORT="${POSTGRES_PORT:=5432}"
+
 # Check if a custom user has been set, otherwise default to 'postgres'
-DB_USER=${POSTGRES_USER:=postgreslocalusername}
+DB_USER="postgres"
 # Check if a custom password has been set, otherwise default to 'password'
-DB_PASSWORD="${POSTGRES_PASSWORD:=postgreslocalpassword}"
+DB_PASSWORD="postgres"
 # Check if a custom database name has been set, otherwise default to 'newsletter'
-DB_NAME="${POSTGRES_DB:=newsletter}"
+DB_NAME="newsletter"
 # Check if a custom port has been set, otherwise default to '5432'
-DB_PORT="${POSTGRES_PORT:=5432}"
+DB_PORT="5432"
 
 # Launch postgres using Docker
 docker run \
@@ -22,7 +32,7 @@ docker run \
   # ^ Increased maximum number of connections for testing purposes
 
 # Keep pinging Postgres until it's ready to accept commands
-until PGPASSWORD="${DB_PASSWORD}" psql -h "localhost" -U "${DB_USER}" -p "${DB_PORT}" -d "postgres" -c '\q'; do
+until PGPASSWORD="${DB_PASSWORD}" psql -h "127.0.0.1" -U "${DB_USER}" -p "${DB_PORT}" -d "postgres" -c '\q'; do
   >&2 echo "Postgres is still unavailable - sleeping"
   sleep 1
 done
@@ -50,10 +60,12 @@ done
 
 export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@127.0.0.1:${DB_PORT}/${DB_NAME}
 
-if ! [ -x "$(command sqlx database create)" ]; then 
-    echo >&2 "Error: sqlx database create"
-fi
+# if ! [ -x "$(command sqlx database create)" ]; then 
+#     echo >&2 "Error: sqlx database create"
+# fi
+sqlx database create
 
-if ! [ -x "$(command sqlx migrate add create_subscriptions_table)" ]; then 
-    echo >&2 "Error: sqlx migrate add create_subscriptions_table"
-fi
+sqlx migrate run
+# if ! [ -x "$(command sqlx migrate add create_subscriptions_table)" ]; then 
+#     echo >&2 "Error: sqlx migrate add create_subscriptions_table"
+# fi
