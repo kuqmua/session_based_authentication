@@ -29,5 +29,24 @@ done
 
 >&2 echo "Postgres is up and running on port ${DB_PORT}!"
 
+###################### not installed for some reason i dont know
+# set -x
+# set -eo pipefail
+
+# if ! [ -x "$(command -v psql)" ]; then
+#   echo >&2 "Error: psql is not installed."
+#   exit 1
+# fi
+
+# if ! [ -x "$(command sqlx --version)" ]; then
+#   echo >&2 "Error: sqlx is not installed."
+#   echo >&2 "Use:"
+#   echo >&2 "    cargo install --version=0.5.7 sqlx-cli --no-default-features --features postgres"
+#   echo >&2 "to install it."
+#   exit 1
+# #   cargo install --version=0.5.7 sqlx-cli --no-default-features --features postgres
+# fi
+######################
+
 export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}
 sqlx database create
