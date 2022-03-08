@@ -23,6 +23,7 @@ anyhow = "1.0.55"
 env_logger = "0.9"
 thiserror = "1.0.30"
 tracing = {version = "0.1", features = ["log"]}
+tracing-actix-web = "0.5"
 tracing-bunyan-formatter = "0.3"
 tracing-log = "0.1"
 tracing-subscriber = {version = "0.3", features = ["registry", "env-filter"]}
