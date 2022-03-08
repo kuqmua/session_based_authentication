@@ -2,6 +2,7 @@ use actix_web::{web, HttpResponse};
 use sqlx::PgPool;
 
 use chrono::Utc;
+use tracing::Instrument;
 use uuid::Uuid;
 
 #[derive(serde::Deserialize)]
@@ -18,6 +19,9 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
         subscriber_email = %form.email,
         subscriber_name = %form.name
     );
+    let _request_span_guard = request_span.enter();
+
+    let query_span = tracing::info_span!("Saving new subscriber details in the database");
     // `Result` has two variants: `Ok` and `Err`.
     // The first for successes, the second for failures.
     // We use a `match` statement to choose what to do based
@@ -34,23 +38,12 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
         Utc::now()
     )
     .execute(pool.as_ref())
+    .instrument(query_span)
     .await
     {
-        Ok(_) => {
-            tracing::info_span!(
-                "New subscriber details have been saved",
-                %request_id
-            );
-            let _request_span_guard = request_span.enter();
-            HttpResponse::Ok().finish()
-        }
+        Ok(_) => HttpResponse::Ok().finish(),
         Err(e) => {
-            tracing::error_span!(
-                "Failed to execute query",
-                %request_id,
-                error = %e
-            );
-            let _request_span_guard = request_span.enter();
+            tracing::error!("Failed to execute query: {:?}", e);
             HttpResponse::InternalServerError().finish()
         }
     }
