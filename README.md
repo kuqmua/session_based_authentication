@@ -18,3 +18,6 @@ sqlx migrate add create_subscriptions_table
 log provides five macros: trace, debug, info, warn and error.
 RUST_LOG=debug cargo run, for example, will surface all logs at debug-level or higher emitted by our application or the crates we are using. RUST_LOG=session_based_authentication, instead, would filter out all records emitted by our dependencies.
 
+
+### subscribe route test (change email and name)
+curl -i -X POST -d 'email=thomas_miiiann@hotmail.com&name=Tomy'

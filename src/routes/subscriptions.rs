@@ -18,7 +18,6 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
         subscriber_email = %form.email,
         subscriber_name = %form.name
     );
-    let _request_span_guard = request_span.enter();
     // `Result` has two variants: `Ok` and `Err`.
     // The first for successes, the second for failures.
     // We use a `match` statement to choose what to do based
@@ -38,7 +37,7 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
     .await
     {
         Ok(_) => {
-            let request_span = tracing::info_span!(
+            tracing::info_span!(
                 "New subscriber details have been saved",
                 %request_id
             );
@@ -46,7 +45,7 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
             HttpResponse::Ok().finish()
         }
         Err(e) => {
-            let request_span = tracing::error_span!(
+            tracing::error_span!(
                 "Failed to execute query",
                 %request_id,
                 error = %e
