@@ -22,7 +22,10 @@ RUST_LOG=debug cargo run, for example, will surface all logs at debug-level or h
 ### subscribe route test (change email and name)
 curl -i -X POST -d 'email=thomas_miiiann@hotmail.com&name=Tomy'
 
-### install remove unused dependencies tool
+### how to install remove unused dependencies tool
 cargo install cargo-udeps
 usage:
 cargo +nightly udeps
+
+### how to install logs formatter?
+cargo install bunyan
