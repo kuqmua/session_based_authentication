@@ -1,7 +1,10 @@
+use secrecy::Secret;
+
 #[derive(serde::Deserialize)]
 pub struct Settings {
     pub database: DatabaseSettings,
     pub application_port: u16,
+    pub password: Secret<String>,
 }
 
 #[derive(serde::Deserialize)]
