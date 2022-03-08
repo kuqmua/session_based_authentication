@@ -21,10 +21,9 @@ actix-web = "4"
 actix-web-lab = "0.12"
 anyhow = "1.0.55"
 env_logger = "0.9"
-log = "0.4"
 secrecy = {version = "0.8.0", features = ["serde"]}
 thiserror = "1.0.30"
-tracing = "0.1.31"
+tracing = {version = "0.1", features = ["log"]}
 # uuid = "0.8.2"
 actix-web-flash-messages = {version = "0.3", features = ["cookies"]}
 argon2 = "0.3.4"
