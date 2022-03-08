@@ -4,13 +4,12 @@ use secrecy::Secret;
 pub struct Settings {
     pub database: DatabaseSettings,
     pub application_port: u16,
-    pub password: Secret<String>,
 }
 
 #[derive(serde::Deserialize)]
 pub struct DatabaseSettings {
     pub username: String,
-    pub password: String,
+    pub password: Secret<String>,
     pub port: u16,
     pub host: String,
     pub database_name: String,
