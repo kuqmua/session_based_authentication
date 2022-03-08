@@ -14,5 +14,4 @@ cargo install --version=0.5.7 sqlx-cli --no-default-features --features postgres
 ### example sqlx migration 
 sqlx migrate add create_subscriptions_table
 
-### install tool to repeat commands
-sudo snap install repeat
+
