@@ -1,15 +1,9 @@
-// use session_based_authentication::main;
-
-// use session_based_authentication::run;
-use session_based_authentication::startup::run;
-// use sqlx::{Connection, PgConnection};
-
-use std::net::TcpListener;
-
-use uuid::Uuid;
-
 use session_based_authentication::configuration::{get_configuration, DatabaseSettings};
+use session_based_authentication::startup::run;
+use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
 use sqlx::{Connection, Executor, PgConnection, PgPool};
+use std::net::TcpListener;
+use uuid::Uuid;
 
 pub struct TestApp {
     pub address: String,
@@ -39,6 +33,9 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
 }
 
 async fn spawn_app() -> TestApp {
+    let subscriber = get_subscriber("test".into(), "debug".into());
+    init_subscriber(subscriber);
+
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
     let port = listener.local_addr().unwrap().port();
     let address = format!("http://127.0.0.1:{}", port);
@@ -46,6 +43,7 @@ async fn spawn_app() -> TestApp {
     let mut configuration = get_configuration().expect("Failed to read configuration.");
     configuration.database.database_name = Uuid::new_v4().to_string();
     let connection_pool = configure_database(&configuration.database).await;
+
     let server = run(listener, connection_pool.clone()).expect("Failed to bind address");
     let _ = tokio::spawn(server);
     TestApp {
