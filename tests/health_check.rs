@@ -3,9 +3,8 @@
 use session_based_authentication::configuration::get_configuration;
 // use session_based_authentication::run;
 use session_based_authentication::startup::run;
-use sqlx::{Connection, PgConnection};
+// use sqlx::{Connection, PgConnection};
 
-use session_based_authentication::startup::run;
 use std::net::TcpListener;
 
 use sqlx::PgPool;
@@ -36,14 +35,14 @@ async fn spawn_app() -> TestApp {
 #[tokio::test]
 async fn health_check_works() {
     // Arrange
-    let address = spawn_app();
+    let app = spawn_app().await;
     // We need to bring in `reqwest`
     // to perform HTTP requests against our application.
     let client = reqwest::Client::new();
 
     // Act
     let response = client
-        .get(&format!("{}/health_check", &address))
+        .get(&format!("{}/health_check", &app.address))
         .send()
         .await
         .expect("Failed to execute request.");
@@ -84,7 +83,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 #[tokio::test]
 async fn subscribe_returns_a_400_when_data_is_missing() {
     // Arrange
-    let app_address = spawn_app();
+    let app = spawn_app().await;
     let client = reqwest::Client::new();
     let test_cases = vec![
         ("name=le%20guin", "missing the email"),
@@ -95,7 +94,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     for (invalid_body, error_message) in test_cases {
         // Act
         let response = client
-            .post(&format!("{}/subscriptions", &app_address))
+            .post(&format!("{}/subscriptions", &app.address))
             .header("Content-Type", "application/x-www-form-urlencoded")
             .body(invalid_body)
             .send()

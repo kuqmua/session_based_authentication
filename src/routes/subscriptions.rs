@@ -10,7 +10,7 @@ pub struct FormData {
     name: String,
 }
 
-pub async fn subscribe(/* */) -> HttpResponse {
+pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> HttpResponse {
     // `Result` has two variants: `Ok` and `Err`.
     // The first for successes, the second for failures.
     // We use a `match` statement to choose what to do based

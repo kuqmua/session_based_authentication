@@ -5,7 +5,7 @@ pub mod startup;
 // pub mod authentication;
 
 use actix_web::dev::Server;
-use actix_web::{web, App, HttpResponse, HttpServer, Responder}; //HttpRequest,
+use actix_web::{web, App, HttpResponse, HttpServer}; //HttpRequest, Responder
 use std::net::TcpListener;
 
 async fn health_check() -> HttpResponse {
