@@ -24,3 +24,5 @@ curl -i -X POST -d 'email=thomas_miiiann@hotmail.com&name=Tomy'
 
 ### install remove unused dependencies tool
 cargo install cargo-udeps
+usage:
+cargo +nightly udeps
