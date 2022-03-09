@@ -36,3 +36,4 @@ sudo docker build --tag zero2prod --file Dockerfile .
 sqlx prepare
 or 
 cargo sqlx prepare -- --lib
+(to use generated .json query data - env var SQLX_OFFLINE must be true)
