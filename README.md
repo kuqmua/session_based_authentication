@@ -20,7 +20,7 @@ RUST_LOG=debug cargo run, for example, will surface all logs at debug-level or h
 
 
 ### subscribe route test (change email and name)
-curl -i -X POST -d 'email=thomas_miiiann@hotmail.com&name=Tomy'
+curl -v http://127.0.0.1:8000/health_check -i -X POST -d 'email=thomas_miiiann@hotmail.com&name=Tomy'
 
 ### how to install remove unused dependencies tool
 cargo install cargo-udeps
