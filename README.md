@@ -19,7 +19,7 @@ log provides five macros: trace, debug, info, warn and error.
 RUST_LOG=debug cargo run, for example, will surface all logs at debug-level or higher emitted by our application or the crates we are using. RUST_LOG=session_based_authentication, instead, would filter out all records emitted by our dependencies.
 
 ### subscribe route test (change email and name)
-curl -v http://127.0.0.1:8000/subscribe -i -X POST -d 'email=thomas_miiiann@hotmail.com&name=Tomy'
+curl -i -X POST -d 'email=thomas_mann@hotmail.com&name=Tom'  http://127.0.0.1:8000/subscriptions
 
 ### how to install remove unused dependencies tool
 cargo install cargo-udeps
