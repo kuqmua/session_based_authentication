@@ -39,4 +39,4 @@ cargo sqlx prepare -- --lib
 (to use generated .json query data - env var SQLX_OFFLINE must be true)
 
 ### run docker container
-sudo docker run session_based_authentication
+sudo docker run -p 8000:8000 session_based_authentication
