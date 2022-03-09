@@ -30,4 +30,4 @@ cargo +nightly udeps
 cargo install bunyan
 
 ### docker build 
-docker build --tag zero2prod --file Dockerfile .
+sudo docker build --tag zero2prod --file Dockerfile .
