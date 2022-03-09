@@ -9,6 +9,7 @@ WORKDIR /app
 COPY . .
 # Let's build our binary!
 # We'll use the release profile to make it faaaast
+ENV SQLX_OFFLINE true
 RUN cargo build --release
 # When `docker run` is executed, launch the binary!
 ENTRYPOINT ["./target/release/session_based_authentication"]
