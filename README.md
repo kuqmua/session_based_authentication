@@ -28,3 +28,6 @@ cargo +nightly udeps
 
 ### how to install logs formatter?
 cargo install bunyan
+
+### docker build 
+docker build --tag zero2prod --file Dockerfile .
