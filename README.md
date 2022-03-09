@@ -30,7 +30,7 @@ cargo +nightly udeps
 cargo install bunyan
 
 ### docker build 
-sudo docker build --tag zero2prod --file Dockerfile .
+sudo docker build --tag session_based_authentication --file Dockerfile .
 
 ### Generate query metadata to support offline compile-time verification.
 sqlx prepare
