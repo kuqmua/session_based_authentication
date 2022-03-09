@@ -34,3 +34,5 @@ sudo docker build --tag zero2prod --file Dockerfile .
 
 ### Generate query metadata to support offline compile-time verification.
 sqlx prepare
+or 
+cargo sqlx prepare -- --lib
