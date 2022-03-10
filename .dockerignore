@@ -1,6 +1,5 @@
 /.github
 /.vscode
-/target
 /vscode
 .gitignore
 docker-compose.yml
@@ -9,3 +8,10 @@ README.md
 !/.git/COMMIT_EDITMSG
 !/.git/ORIG_HEAD
 !/.git/FETCH_HEAD
+
+.env
+target/
+tests/
+Dockerfile
+scripts/
+migrations/
