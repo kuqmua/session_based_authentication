@@ -2,8 +2,9 @@ use secrecy::ExposeSecret;
 use session_based_authentication::configuration::get_configuration;
 use session_based_authentication::startup::run;
 use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
-use sqlx::postgres::PgPool;
+// use sqlx::postgres::PgPool;
 use std::net::TcpListener;
+use sqlx::postgres::PgPoolOptions;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -15,7 +16,8 @@ async fn main() -> std::io::Result<()> {
     init_subscriber(subscriber);
 
     let configuration = get_configuration().expect("Failed to read configuration.");
-    let connection_pool = PgPool::connect_lazy(&configuration.database.connection_string().expose_secret())
+    let connection_pool = PgPoolOptions::new()
+    .connect_timeout(std::time::Duration::from_secs(2)).connect_lazy(&configuration.database.connection_string().expose_secret())
             .expect("Failed to connect to Postgres.");
 
     let address = format!(
