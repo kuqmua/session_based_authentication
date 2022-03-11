@@ -40,3 +40,7 @@ cargo sqlx prepare -- --lib
 
 ### run docker container
 sudo docker run -p 8000:8000 session_based_authentication
+
+### smaller rust docker builds
+We could go even smaller by using rust:1.59.0-alpine, but we would have to cross-compile to the linux-musl target - out of scope for now. Check out rust-musl-builder if you are interested in generating tiny Docker images.
+Another option to reduce the size of our binary further is stripping symbols from it - you can find more information about it here.
