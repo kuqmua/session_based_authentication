@@ -55,7 +55,6 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     // Add configuration values from a file named `configuration`.
     // It will look for any top-level file with an extension
     // that `config` knows how to parse: yaml, json, etc.
-    settings.merge(config::File::with_name("configuration"))?;
 
     let environment: Environment = std::env::var("APP_ENVIRONMENT")
         .unwrap_or_else(|_| "local".into())
@@ -66,6 +65,10 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     settings.merge(
         config::File::from(configuration_directory.join(environment.as_str())).required(true),
     )?;
+
+    // Add in settings from environment variables (with a prefix of APP and '__' as separator)
+    // E.g. `APP_APPLICATION__PORT=5001 would set `Settings.application.port`
+    settings.merge(config::Environment::with_prefix("app").separator("__"))?;
 
     settings.try_into()
 }
