@@ -15,6 +15,12 @@ impl SubscriberName {
         // consuming it according to move semantics
         self.0
     }
+    pub fn inner_mut(&mut self) -> &mut str {
+        // The caller gets a mutable reference to the inner string.
+        // This allows them to perform *arbitrary* changes to
+        // value itself, potentially breaking our invariants!
+        &mut self.0
+    }
     /// Returns an instance of `SubscriberName` if the input satisfies all
     /// our validation constraints on subscriber names.  
     /// It panics otherwise.
