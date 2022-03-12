@@ -46,3 +46,6 @@ We could go even smaller by using rust:1.59.0-alpine, but we would have to cross
 Another option to reduce the size of our binary further is stripping symbols from it - you can find more information about it here.
 
 ### ignore Digital Ocean for now
+
+### property-based testing
+There are two mainstream options for property-based testing in the Rust ecosystem: quickcheck and proptest.
