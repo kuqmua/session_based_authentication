@@ -47,5 +47,7 @@ Another option to reduce the size of our binary further is stripping symbols fro
 
 ### ignore Digital Ocean for now
 
+### ignore How to get started with postmark
+
 ### property-based testing
 There are two mainstream options for property-based testing in the Rust ecosystem: quickcheck and proptest.
