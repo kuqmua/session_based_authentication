@@ -8,6 +8,13 @@ pub struct NewSubscriber {
 pub struct SubscriberName(String);
 
 impl SubscriberName {
+    pub fn inner(self) -> String {
+        // The caller gets the inner string,
+        // but they do not have a SubscriberName anymore!
+        // That's because `inner` takes `self` by value,
+        // consuming it according to move semantics
+        self.0
+    }
     /// Returns an instance of `SubscriberName` if the input satisfies all
     /// our validation constraints on subscriber names.  
     /// It panics otherwise.
