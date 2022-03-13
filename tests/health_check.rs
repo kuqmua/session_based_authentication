@@ -1,3 +1,5 @@
+mod helpers;
+
 use once_cell::sync::Lazy;
 // use secrecy::ExposeSecret;
 use session_based_authentication::configuration::{get_configuration, DatabaseSettings};
