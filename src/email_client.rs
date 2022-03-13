@@ -7,6 +7,7 @@ pub struct EmailClient {
     sender: SubscriberEmail,
 }
 
+#[derive(serde::Serialize)]
 struct SendEmailRequest {
     from: String,
     to: String,
@@ -38,7 +39,7 @@ impl EmailClient {
             html_body: html_content.to_owned(),
             text_body: text_content.to_owned(),
         };
-        let builder = self.http_client.post(&url);
+        let builder = self.http_client.post(&url).json(&request_body);
         Ok(())
     }
 }
