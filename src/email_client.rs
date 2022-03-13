@@ -1,10 +1,12 @@
 use crate::domain::SubscriberEmail;
 use reqwest::Client;
+use secrecy::Secret;
 
 pub struct EmailClient {
     http_client: Client,
     base_url: String,
     sender: SubscriberEmail,
+    authorization_token: Secret<String>,
 }
 
 #[derive(serde::Serialize)]
@@ -17,11 +19,16 @@ struct SendEmailRequest {
 }
 
 impl EmailClient {
-    pub fn new(base_url: String, sender: SubscriberEmail) -> Self {
+    pub fn new(
+        base_url: String,
+        sender: SubscriberEmail,
+        authorization_token: Secret<String>,
+    ) -> Self {
         Self {
             http_client: Client::new(),
             base_url,
             sender,
+            authorization_token,
         }
     }
     pub async fn send_email(
@@ -51,6 +58,7 @@ mod tests {
     use fake::faker::internet::en::SafeEmail;
     use fake::faker::lorem::en::{Paragraph, Sentence};
     use fake::{Fake, Faker};
+    use secrecy::Secret;
     use wiremock::matchers::any;
     use wiremock::{Mock, MockServer, ResponseTemplate};
 
@@ -59,7 +67,7 @@ mod tests {
         // Arrange
         let mock_server = MockServer::start().await;
         let sender = SubscriberEmail::parse(SafeEmail().fake()).unwrap();
-        let email_client = EmailClient::new(mock_server.uri(), sender);
+        let email_client = EmailClient::new(mock_server.uri(), sender, Secret::new(Faker.fake()));
 
         Mock::given(any())
             .respond_with(ResponseTemplate::new(200))
