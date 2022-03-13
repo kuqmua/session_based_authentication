@@ -10,6 +10,7 @@ pub struct EmailClient {
 }
 
 #[derive(serde::Serialize)]
+#[serde(rename_all = "PascalCase")]
 struct SendEmailRequest {
     from: String,
     to: String,
