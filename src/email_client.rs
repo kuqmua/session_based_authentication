@@ -22,7 +22,9 @@ impl EmailClient {
         html_content: &str,
         text_content: &str,
     ) -> Result<(), String> {
-        todo!()
+        let url = format!("{}/email", self.base_url);
+        let builder = self.http_client.post(&url);
+        Ok(())
     }
 }
 
