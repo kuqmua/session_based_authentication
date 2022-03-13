@@ -79,6 +79,7 @@ mod tests {
             if let Ok(body) = result {
                 // Check that all the mandatory fields are populated
                 // without inspecting the field values
+                dbg!(&body);
                 body.get("From").is_some()
                     && body.get("To").is_some()
                     && body.get("Subject").is_some()
@@ -102,6 +103,7 @@ mod tests {
             .and(header("Content-Type", "application/json"))
             .and(path("/email"))
             .and(method("POST"))
+            .and(SendEmailBodyMatcher)
             .respond_with(ResponseTemplate::new(200))
             .expect(1)
             .mount(&mock_server)
