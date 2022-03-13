@@ -51,3 +51,14 @@ Another option to reduce the size of our binary further is stripping symbols fro
 
 ### property-based testing
 There are two mainstream options for property-based testing in the Rust ecosystem: quickcheck and proptest.
+
+
+### if tests will be more than 1024
+If you have large test suite with a flat file structure, you'll soon be building tens of executable every time you run cargo test. While each executable is compiled in parallel, the linking phase is instead entirely sequential! Bundling all your test cases in a single executable reduces the time spent compiling your test suite in CI3.
+If you are running Linux, you might see errors like
+
+thread 'actix-rt:worker' panicked at 
+'Can not create Runtime: Os { code: 24, kind: Other, message: "Too many open files" }',
+
+when you run cargo test after the refactoring.
+This is due to a limit enforced by the operating system on the maximum number of open file descriptors (including sockets) for each process - given that we are now running all tests as part of a single binary, we might be exceeding it. The limit is usually set to 1024, but you can raise it with ulimit -n X (e.g. ulimit -n 10000) to resolve the issue.
