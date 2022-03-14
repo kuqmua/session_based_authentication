@@ -97,4 +97,7 @@ async fn subscribe_sends_a_confirmation_email_for_valid_data() {
 
     // Assert
     // Mock asserts on drop
+    let email_request = &app.email_server.received_requests().await.unwrap()[0];
+    // Parse the body as JSON, starting from raw bytes
+    let body: serde_json::Value = serde_json::from_slice(&email_request.body).unwrap();
 }
