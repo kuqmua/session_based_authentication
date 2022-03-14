@@ -1,8 +1,8 @@
 use crate::email_client::EmailClient;
+use crate::startup::ApplicationBaseUrl;
 use actix_web::{web, HttpResponse};
 use chrono::Utc;
 use sqlx::PgPool;
-use crate::startup::ApplicationBaseUrl;
 use uuid::Uuid;
 
 use crate::domain::{NewSubscriber, SubscriberEmail, SubscriberName};
@@ -69,7 +69,7 @@ pub async fn send_confirmation_email(
     base_url: &str,
 ) -> Result<(), reqwest::Error> {
     let confirmation_link = format!(
-        "{}/subscriptions/confirm?subscription_token=mytoken", 
+        "{}/subscriptions/confirm?subscription_token=mytoken",
         base_url
     );
     let plain_body = format!(
