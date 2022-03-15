@@ -15,3 +15,5 @@ tests/
 Dockerfile
 scripts/
 migrations/
+
+postgresql_volume/
