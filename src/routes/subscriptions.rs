@@ -4,8 +4,17 @@ use actix_web::{web, HttpResponse};
 use chrono::Utc;
 use sqlx::PgPool;
 use uuid::Uuid;
-
+use rand::distributions::Alphanumeric;
+use rand::{thread_rng, Rng};
 use crate::domain::{NewSubscriber, SubscriberEmail, SubscriberName};
+
+fn generate_subscription_token() -> String {
+    let mut rng = thread_rng();
+    std::iter::repeat_with(|| rng.sample(Alphanumeric))
+            .map(char::from)
+            .take(25)
+            .collect()
+  }
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
