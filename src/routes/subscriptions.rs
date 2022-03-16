@@ -8,6 +8,7 @@ use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use crate::domain::{NewSubscriber, SubscriberEmail, SubscriberName};
 use actix_web::ResponseError;
+use actix_web::http::StatusCode; 
 
 fn generate_subscription_token() -> String {
     let mut rng = thread_rng();
@@ -82,7 +83,16 @@ impl std::fmt::Display for SubscribeError {
 
 impl std::error::Error for SubscribeError {}
 
-impl ResponseError for SubscribeError {}
+impl ResponseError for SubscribeError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            SubscribeError::ValidationError(_) => StatusCode::BAD_REQUEST,
+            SubscribeError::DatabaseError(_)
+            | SubscribeError::StoreTokenError(_)
+            | SubscribeError::SendEmailError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
+}
 
 // #[tracing::instrument(
 //     name = "Adding a new subscriber",
