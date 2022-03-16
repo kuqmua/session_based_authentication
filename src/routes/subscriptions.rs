@@ -90,8 +90,13 @@ pub async fn subscribe(
     Ok(HttpResponse::Ok().finish())
 }
 
-#[derive(Debug)]
 pub struct StoreTokenError(sqlx::Error);
+
+impl std::fmt::Debug for StoreTokenError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}\nCaused by:\n\t{}", self, self.0)
+    }
+}
 
 impl std::fmt::Display for StoreTokenError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
