@@ -19,7 +19,6 @@ path = "src/main.rs"
 actix-session = "0.5.0"
 actix-web = "4"
 actix-web-lab = "0.12"
-anyhow = "1.0.55"
 env_logger = "0.9"
 thiserror = "1"
 tracing = {version = "0.1", features = ["log"]}
@@ -29,6 +28,7 @@ tracing-log = "0.1"
 tracing-subscriber = {version = "0.3", features = ["registry", "env-filter"]}
 # uuid = "0.8.2"
 actix-web-flash-messages = {version = "0.3", features = ["cookies"]}
+anyhow = "1"
 argon2 = "0.3.4"
 config = "0.11"
 hex = "0.4"
