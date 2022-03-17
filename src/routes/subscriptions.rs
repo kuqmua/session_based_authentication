@@ -1,6 +1,7 @@
 use crate::email_client::EmailClient;
 use crate::startup::ApplicationBaseUrl;
 use actix_web::{web, HttpResponse};
+use anyhow::Context;
 use chrono::Utc;
 use sqlx::{PgPool, Transaction, Postgres};
 use uuid::Uuid;
@@ -54,8 +55,8 @@ pub enum SubscribeError {
     // TransactionCommitError(#[source] sqlx::Error),
     // #[error("Failed to send a confirmation email.")]
     // SendEmailError(#[from] reqwest::Error),
-    #[error("{1}")]
-    UnexpectedError(#[source] Box<dyn std::error::Error>, String),
+    #[error(transparent)]
+    UnexpectedError(#[from] anyhow::Error),
 }
 
 impl std::fmt::Debug for SubscribeError {
@@ -135,7 +136,7 @@ impl ResponseError for SubscribeError {
     fn status_code(&self) -> StatusCode {
         match self {
             SubscribeError::ValidationError(_) => StatusCode::BAD_REQUEST,
-            SubscribeError::UnexpectedError(_, _) => StatusCode::INTERNAL_SERVER_ERROR,
+            SubscribeError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             // SubscribeError::PoolError(_)
             // | SubscribeError::TransactionCommitError(_)
             // | SubscribeError::InsertSubscriberError(_)
@@ -160,11 +161,11 @@ pub async fn subscribe(
     base_url: web::Data<ApplicationBaseUrl>,
 ) -> Result<HttpResponse, SubscribeError> {
     let new_subscriber = form.0.try_into().map_err(SubscribeError::ValidationError)?;
-    let mut transaction = pool.begin().await.map_err(|e| SubscribeError::UnexpectedError(Box::new(e), "Failed to acquire a Postgres connection from the pool".into()))?;
-    let subscriber_id = insert_subscriber(&mut transaction, &new_subscriber).await.map_err(|e| SubscribeError::UnexpectedError(Box::new(e), "Failed to acquire a Postgres connection from the pool".into()))?;
+    let mut transaction = pool.begin().await.context("Failed to acquire a Postgres connection from the pool")?;
+    let subscriber_id = insert_subscriber(&mut transaction, &new_subscriber).await.context("Failed to acquire a Postgres connection from the pool")?;
     let subscription_token = generate_subscription_token();
-    store_token(&mut transaction, subscriber_id, &subscription_token).await.map_err(|e| SubscribeError::UnexpectedError(Box::new(e), "Failed to acquire a Postgres connection from the pool".into(),))?;
-    transaction.commit().await.map_err(|e| SubscribeError::UnexpectedError(Box::new(e), "Failed to acquire a Postgres connection from the pool".into()))?;
+    store_token(&mut transaction, subscriber_id, &subscription_token).await.context("Failed to acquire a Postgres connection from the pool")?;
+    transaction.commit().await.context("Failed to acquire a Postgres connection from the pool")?;
     send_confirmation_email(
         &email_client, 
         new_subscriber, 
