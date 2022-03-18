@@ -54,11 +54,34 @@
 //     user_id.ok_or_else(|| PublishError::AuthError(anyhow::anyhow!("Unknown username.")))
 // }
 
+use crate::routes::error_chain_fmt;
+use actix_web::http::StatusCode;
+use actix_web::ResponseError;
 use actix_web::{web, HttpResponse};
 use sqlx::PgPool;
 
 struct ConfirmedSubscriber {
     email: String,
+}
+
+#[derive(thiserror::Error)]
+pub enum PublishError {
+    #[error(transparent)]
+    UnexpectedError(#[from] anyhow::Error),
+}
+
+impl std::fmt::Debug for PublishError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        error_chain_fmt(self, f)
+    }
+}
+
+impl ResponseError for PublishError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            PublishError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
 }
 
 #[derive(serde::Deserialize)]
@@ -77,8 +100,9 @@ pub struct Content {
 pub async fn publish_newsletter(
     _body: web::Json<BodyData>,
     pool: web::Data<PgPool>,
-) -> HttpResponse {
-    HttpResponse::Ok().finish()
+) -> Result<HttpResponse, PublishError> {
+    let subscribers = get_confirmed_subscribers(&pool).await?;
+    Ok(HttpResponse::Ok().finish())
 }
 
 #[tracing::instrument(name = "Get confirmed subscribers", skip(pool))]
