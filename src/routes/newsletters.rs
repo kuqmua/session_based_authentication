@@ -74,7 +74,10 @@ pub struct Content {
 }
 
 // Dummy implementation
-pub async fn publish_newsletter(_body: web::Json<BodyData>) -> HttpResponse {
+pub async fn publish_newsletter(
+    _body: web::Json<BodyData>,
+    pool: web::Data<PgPool>,
+) -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
