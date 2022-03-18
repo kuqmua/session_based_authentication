@@ -54,9 +54,21 @@
 //     user_id.ok_or_else(|| PublishError::AuthError(anyhow::anyhow!("Unknown username.")))
 // }
 
-use actix_web::HttpResponse;
+use actix_web::{web, HttpResponse};
+
+#[derive(serde::Deserialize)]
+pub struct BodyData {
+    title: String,
+    content: Content,
+}
+
+#[derive(serde::Deserialize)]
+pub struct Content {
+    html: String,
+    text: String,
+}
 
 // Dummy implementation
-pub async fn publish_newsletter() -> HttpResponse {
+pub async fn publish_newsletter(_body: web::Json<BodyData>) -> HttpResponse {
     HttpResponse::Ok().finish()
 }
