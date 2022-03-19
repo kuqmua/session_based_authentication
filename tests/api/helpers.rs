@@ -46,6 +46,20 @@ impl TestUser {
             password: Uuid::new_v4().to_string(),
         }
     }
+    async fn store(&self, pool: &PgPool) {
+        let password_hash = sha3::Sha3_256::digest(credentials.password.expose_secret().as_bytes());
+        let password_hash = format!("{:x}", password_hash);
+        sqlx::query!(
+            "INSERT INTO users (user_id, username, password_hash)
+            VALUES ($1, $2, $3)",
+            self.user_id,
+            self.username,
+            password_hash,
+        )
+        .execute(pool)
+        .await
+        .expect("Failed to store test user.");
+    }
 }
 
 pub struct TestApp {
