@@ -39,6 +39,17 @@ pub struct TestApp {
 }
 
 impl TestApp {
+    pub async fn post_newsletters(&self, body: serde_json::Value) -> reqwest::Response {
+        reqwest::Client::new()
+            .post(&format!("{}/newsletters", &self.address))
+            // Random credentials!
+            // `reqwest` does all the encoding/formatting heavy-lifting for us.
+            .basic_auth(Uuid::new_v4().to_string(), Some(Uuid::new_v4().to_string()))
+            .json(&body)
+            .send()
+            .await
+            .expect("Failed to execute request.")
+    }
     pub async fn post_subscriptions(&self, body: String) -> reqwest::Response {
         reqwest::Client::new()
             .post(&format!("{}/subscriptions", &self.address))
