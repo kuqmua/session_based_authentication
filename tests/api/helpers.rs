@@ -5,6 +5,7 @@ use session_based_authentication::startup::get_connection_pool;
 use session_based_authentication::startup::run;
 use session_based_authentication::startup::Application;
 use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
+use sha3::Digest;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use uuid::Uuid;
@@ -30,6 +31,22 @@ static TRACING: Lazy<()> = Lazy::new(|| {
         init_subscriber(subscriber);
     };
 });
+
+pub struct TestUser {
+    pub user_id: Uuid,
+    pub username: String,
+    pub password: String,
+}
+
+impl TestUser {
+    pub fn generate() -> Self {
+        Self {
+            user_id: Uuid::new_v4(),
+            username: Uuid::new_v4().to_string(),
+            password: Uuid::new_v4().to_string(),
+        }
+    }
+}
 
 pub struct TestApp {
     pub address: String,
