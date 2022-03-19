@@ -76,7 +76,7 @@ impl TestApp {
             .post(&format!("{}/newsletters", &self.address))
             // Random credentials!
             // `reqwest` does all the encoding/formatting heavy-lifting for us.
-            .basic_auth(Uuid::new_v4().to_string(), Some(Uuid::new_v4().to_string()))
+            .basic_auth(&self.test_user.username, Some(&self.test_user.password))
             .json(&body)
             .send()
             .await
