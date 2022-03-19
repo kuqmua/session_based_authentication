@@ -57,7 +57,8 @@
 use crate::domain::SubscriberEmail;
 use crate::email_client::EmailClient;
 use crate::routes::error_chain_fmt;
-use actix_web::http::header::HeaderMap;
+use actix_web::http::header;
+use actix_web::http::header::{HeaderMap, HeaderValue};
 use actix_web::http::StatusCode;
 use actix_web::HttpRequest;
 use actix_web::ResponseError;
@@ -84,6 +85,23 @@ impl ResponseError for PublishError {
             PublishError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             // Return a 401 for auth errors
             PublishError::AuthError(_) => StatusCode::UNAUTHORIZED,
+        }
+    }
+    fn error_response(&self) -> HttpResponse {
+        match self {
+            PublishError::UnexpectedError(_) => {
+                HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR)
+            }
+            PublishError::AuthError(_) => {
+                let mut response = HttpResponse::new(StatusCode::UNAUTHORIZED);
+                let header_value = HeaderValue::from_str(r#"Basic realm="publish""#).unwrap();
+                response
+                    .headers_mut()
+                    // actix_web::http::header provides a collection of constants
+                    // for the names of several well-known/standard HTTP headers
+                    .insert(header::WWW_AUTHENTICATE, header_value);
+                response
+            }
         }
     }
 }
