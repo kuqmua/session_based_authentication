@@ -57,10 +57,13 @@
 use crate::domain::SubscriberEmail;
 use crate::email_client::EmailClient;
 use crate::routes::error_chain_fmt;
+use actix_web::http::header::HeaderMap;
 use actix_web::http::StatusCode;
+use actix_web::HttpRequest;
 use actix_web::ResponseError;
 use actix_web::{web, HttpResponse};
 use anyhow::Context;
+use secrecy::Secret;
 use sqlx::PgPool;
 
 struct ConfirmedSubscriber {
@@ -99,12 +102,19 @@ pub struct Content {
     text: String,
 }
 
+struct Credentials {
+    username: String,
+    password: Secret<String>,
+}
+
 // Dummy implementation
 pub async fn publish_newsletter(
     body: web::Json<BodyData>,
     pool: web::Data<PgPool>,
     email_client: web::Data<EmailClient>,
+    request: HttpRequest,
 ) -> Result<HttpResponse, PublishError> {
+    let _credentials = basic_authentication(request.headers());
     let subscribers = get_confirmed_subscribers(&pool).await?;
     for subscriber in subscribers {
         match subscriber {
@@ -135,6 +145,10 @@ pub async fn publish_newsletter(
         }
     }
     Ok(HttpResponse::Ok().finish())
+}
+
+fn basic_authentication(headers: &HeaderMap) -> Result<Credentials, anyhow::Error> {
+    todo!()
 }
 
 #[tracing::instrument(name = "Get confirmed subscribers", skip(pool))]
