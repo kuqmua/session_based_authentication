@@ -44,6 +44,7 @@
 //     Ok(server)
 // }
 
+use crate::routes::login;
 use crate::routes::newsletters::publish_newsletter;
 use crate::routes::{confirm, health_check, login_form, subscribe};
 use actix_web::dev::Server;
@@ -132,6 +133,7 @@ pub fn run(
             // Middlewares are added using the `wrap` method on `App`
             .wrap(TracingLogger::default())
             .route("/login", web::get().to(login_form))
+            .route("/login", web::post().to(login))
             .route("/", web::get().to(home))
             .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
