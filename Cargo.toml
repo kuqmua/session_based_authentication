@@ -22,7 +22,7 @@ actix-web-lab = "0.12"
 argon2 = {version = "0.3", features = ["std"]}
 base64 = "0.13"
 env_logger = "0.9"
-sha3 = "0.9"
+# sha3 = "0.9"
 thiserror = "1"
 tracing = {version = "0.1", features = ["log"]}
 tracing-actix-web = "0.5"
