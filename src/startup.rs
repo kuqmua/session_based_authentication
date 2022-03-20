@@ -45,12 +45,13 @@
 // }
 
 use crate::routes::newsletters::publish_newsletter;
-use crate::routes::{confirm, health_check, subscribe};
+use crate::routes::{confirm, health_check, login_form, subscribe};
 use actix_web::dev::Server;
 // use actix_web::middleware::Logger;
 use crate::configuration::DatabaseSettings;
 use crate::configuration::Settings;
 use crate::email_client::EmailClient;
+use crate::routes::home;
 use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
@@ -130,6 +131,8 @@ pub fn run(
         App::new()
             // Middlewares are added using the `wrap` method on `App`
             .wrap(TracingLogger::default())
+            .route("/login", web::get().to(login_form))
+            .route("/", web::get().to(home))
             .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
             .route("/subscriptions/confirm", web::get().to(confirm))
