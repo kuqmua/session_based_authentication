@@ -247,7 +247,7 @@ async fn validate_credentials(
     // );
     let row: Option<_> = sqlx::query!(
         r#"
-        SELECT user_id, password_hash, salt
+        SELECT user_id, password_hash
         FROM users
         WHERE username = $1
         "#,
@@ -258,8 +258,8 @@ async fn validate_credentials(
     .context("Failed to perform a query to retrieve stored credentials.")
     .map_err(PublishError::UnexpectedError)?;
 
-    let (expected_password_hash, user_id, salt) = match row {
-        Some(row) => (row.password_hash, row.user_id, row.salt),
+    let (expected_password_hash, user_id) = match row {
+        Some(row) => (row.password_hash, row.user_id),
         None => {
             return Err(PublishError::AuthError(anyhow::anyhow!(
                 "Unknown username."
