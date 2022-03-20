@@ -68,7 +68,7 @@ use argon2::PasswordHasher;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordVerifier, Version};
 use secrecy::ExposeSecret;
 use secrecy::Secret;
-use sha3::Digest;
+// use sha3::Digest;
 use sqlx::PgPool;
 
 struct ConfirmedSubscriber {

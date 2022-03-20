@@ -7,7 +7,7 @@ use session_based_authentication::startup::get_connection_pool;
 use session_based_authentication::startup::run;
 use session_based_authentication::startup::Application;
 use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
-use sha3::Digest;
+// use sha3::Digest;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use uuid::Uuid;
