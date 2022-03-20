@@ -69,6 +69,7 @@ use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordVerifier, Version}
 use secrecy::ExposeSecret;
 use secrecy::Secret;
 // use sha3::Digest;
+use crate::telemetry::spawn_blocking_with_tracing;
 use sqlx::PgPool;
 
 struct ConfirmedSubscriber {
@@ -244,12 +245,9 @@ async fn validate_credentials(
         .map_err(PublishError::UnexpectedError)?
         .ok_or_else(|| PublishError::AuthError(anyhow::anyhow!("Unknown username.")))?;
     let current_span = tracing::Span::current();
-    tokio::task::spawn_blocking(move || {
-        current_span.in_scope(|| verify_password_hash(expected_password_hash, credentials.password))
-    })
-    .await
-    .context("Failed to spawn blocking task.")
-    .map_err(PublishError::UnexpectedError)??;
+    spawn_blocking_with_tracing(move || {
+        verify_password_hash(expected_password_hash, credentials.password)
+    });
 
     Ok(user_id)
 }
