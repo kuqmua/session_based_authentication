@@ -4,6 +4,7 @@ use actix_web::{web, HttpResponse};
 #[derive(serde::Deserialize)]
 pub struct QueryParams {
     error: Option<String>,
+    tag: Option<String>,
 }
 
 pub async fn login_form(query: web::Query<QueryParams>) -> HttpResponse {
