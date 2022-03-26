@@ -1,5 +1,5 @@
 use crate::authentication::{validate_credentials, Credentials};
-use actix_web::http::header::ContentType;
+// use actix_web::http::header::ContentType;
 use actix_web::http::header::LOCATION;
 use actix_web::web;
 use actix_web::HttpResponse;
@@ -10,9 +10,11 @@ use sqlx::PgPool;
 
 use crate::authentication::AuthError;
 use crate::routes::error_chain_fmt;
-use actix_web::http::StatusCode;
-use actix_web::ResponseError;
+// use actix_web::http::StatusCode;
+// use actix_web::ResponseError;
 use hmac::{Hmac, Mac};
+
+use actix_web::error::InternalError;
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
@@ -30,7 +32,7 @@ pub async fn login(
     // Injecting the secret as a secret string for the time being.
     secret: web::Data<Secret<String>>,
     // No longer returning a `Result<HttpResponse, LoginError>`!
-) -> HttpResponse {
+) -> Result<HttpResponse, InternalError<LoginError>> {
     let credentials = Credentials {
         username: form.0.username,
         password: form.0.password,
@@ -39,9 +41,9 @@ pub async fn login(
     match validate_credentials(credentials, &pool).await {
         Ok(user_id) => {
             tracing::Span::current().record("user_id", &tracing::field::display(&user_id));
-            HttpResponse::SeeOther()
+            Ok(HttpResponse::SeeOther()
                 .insert_header((LOCATION, "/"))
-                .finish()
+                .finish())
         }
         Err(e) => {
             let e = match e {
@@ -56,9 +58,10 @@ pub async fn login(
                 mac.update(query_string.as_bytes());
                 mac.finalize().into_bytes()
             };
-            HttpResponse::SeeOther()
+            let response = HttpResponse::SeeOther()
                 .insert_header((LOCATION, format!("/login?{query_string}&tag={hmac_tag:x}")))
-                .finish()
+                .finish();
+            Err(InternalError::from_response(e, response))
         }
     }
 }
