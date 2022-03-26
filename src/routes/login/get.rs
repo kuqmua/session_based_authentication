@@ -1,3 +1,4 @@
+use crate::startup::HmacSecret;
 use actix_web::http::header::ContentType;
 use actix_web::{web, HttpResponse};
 
@@ -7,7 +8,10 @@ pub struct QueryParams {
     tag: String,
 }
 
-pub async fn login_form(query: Option<web::Query<QueryParams>>) -> HttpResponse {
+pub async fn login_form(
+    query: Option<web::Query<QueryParams>>,
+    secret: web::Data<HmacSecret>,
+) -> HttpResponse {
     let error_html = match query {
         None => "".into(),
         Some(query) => {
