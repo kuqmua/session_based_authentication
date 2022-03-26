@@ -48,6 +48,7 @@ use crate::routes::login;
 use crate::routes::newsletters::publish_newsletter;
 use crate::routes::{confirm, health_check, login_form, subscribe};
 use actix_web::dev::Server;
+use secrecy::Secret;
 // use actix_web::middleware::Logger;
 use crate::configuration::DatabaseSettings;
 use crate::configuration::Settings;
@@ -94,6 +95,7 @@ impl Application {
             connection_pool,
             email_client,
             configuration.application.base_url,
+            configuration.application.hmac_secret,
         )?;
 
         // We "save" the bound port in one of `Application`'s fields
@@ -124,6 +126,7 @@ pub fn run(
     db_pool: PgPool,
     email_client: EmailClient,
     base_url: String,
+    hmac_secret: Secret<String>,
 ) -> Result<Server, std::io::Error> {
     let db_pool = Data::new(db_pool);
     let email_client = Data::new(email_client);
@@ -142,6 +145,7 @@ pub fn run(
             .app_data(db_pool.clone())
             .app_data(email_client.clone())
             .app_data(base_url.clone())
+            .app_data(Data::new(hmac_secret.clone()))
     })
     .listen(listener)?
     .run();
