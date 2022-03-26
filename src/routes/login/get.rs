@@ -1,4 +1,5 @@
 use crate::startup::HmacSecret;
+use actix_web::cookie::{time::Duration, Cookie};
 use actix_web::http::header::ContentType;
 use actix_web::{web, HttpRequest, HttpResponse};
 use hmac::{Hmac, Mac}; //, NewMac
@@ -29,6 +30,7 @@ pub async fn login_form(request: HttpRequest) -> HttpResponse {
     };
     HttpResponse::Ok()
         .content_type(ContentType::html())
+        .cookie(Cookie::build("_flash", "").max_age(Duration::ZERO).finish())
         .body(format!(
             r#"<!DOCTYPE html>
 <html lang="en">
