@@ -10,6 +10,7 @@ use crate::authentication::AuthError;
 use crate::routes::error_chain_fmt;
 use actix_web::http::StatusCode;
 use actix_web::ResponseError;
+use hmac::{Hmac, Mac};
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
@@ -58,9 +59,19 @@ impl std::fmt::Debug for LoginError {
 
 impl ResponseError for LoginError {
     fn error_response(&self) -> HttpResponse {
-        let encoded_error = urlencoding::Encoded::new(self.to_string());
+        let query_string = format!("error={}", urlencoding::Encoded::new(self.to_string()));
+        // We need the secret here - how do we get it?
+        let secret: &[u8] = todo!();
+        let hmac_tag = {
+            let mut mac = Hmac::<sha2::Sha256>::new_from_slice(secret).unwrap();
+            mac.update(query_string.as_bytes());
+            mac.finalize().into_bytes()
+        };
         HttpResponse::build(self.status_code())
-            .insert_header((LOCATION, format!("/login?error={}", encoded_error)))
+            .insert_header((
+                LOCATION,
+                format!("/login?{}&tag={:x}", query_string, hmac_tag),
+            ))
             .finish()
     }
     fn status_code(&self) -> StatusCode {
