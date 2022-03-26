@@ -2,14 +2,14 @@ use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, Version};
 use once_cell::sync::Lazy;
 use session_based_authentication::configuration::{get_configuration, DatabaseSettings};
-use session_based_authentication::email_client::EmailClient;
+// use session_based_authentication::email_client::EmailClient;
 use session_based_authentication::startup::get_connection_pool;
-use session_based_authentication::startup::run;
+// use session_based_authentication::startup::run;
 use session_based_authentication::startup::Application;
 use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
 // use sha3::Digest;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
-use std::net::TcpListener;
+// use std::net::TcpListener;
 use uuid::Uuid;
 use wiremock::MockServer;
 
@@ -82,6 +82,19 @@ pub struct TestApp {
 }
 
 impl TestApp {
+    pub async fn post_login<Body>(&self, body: &Body) -> reqwest::Response
+    where
+        Body: serde::Serialize,
+    {
+        reqwest::Client::new()
+            .post(&format!("{}/login", &self.address))
+            // This `reqwest` method makes sure that the body is URL-encoded
+            // and the `Content-Type` header is set accordingly.
+            .form(body)
+            .send()
+            .await
+            .expect("Failed to execute request.")
+    }
     pub async fn post_newsletters(&self, body: serde_json::Value) -> reqwest::Response {
         reqwest::Client::new()
             .post(&format!("{}/newsletters", &self.address))
