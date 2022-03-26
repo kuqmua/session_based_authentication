@@ -3,17 +3,19 @@ use actix_web::{web, HttpResponse};
 
 #[derive(serde::Deserialize)]
 pub struct QueryParams {
-    error: Option<String>,
-    tag: Option<String>,
+    error: String,
+    tag: String,
 }
 
-pub async fn login_form(query: web::Query<QueryParams>) -> HttpResponse {
-    let error_html = match query.0.error {
+pub async fn login_form(query: Option<web::Query<QueryParams>>) -> HttpResponse {
+    let error_html = match query {
         None => "".into(),
-        Some(error_message) => format!(
-            "<p><i>{}</i></p>",
-            htmlescape::encode_minimal(&error_message)
-        ),
+        Some(query) => {
+            format!(
+                "<p><i>{}</i></p>",
+                htmlescape::encode_minimal(&query.0.error)
+            )
+        }
     };
     HttpResponse::Ok()
         .content_type(ContentType::html())
