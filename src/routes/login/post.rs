@@ -1,9 +1,10 @@
 use crate::authentication::{validate_credentials, Credentials};
+use actix_web::cookie::Cookie;
 // use actix_web::http::header::ContentType;
 use actix_web::http::header::LOCATION;
 use actix_web::web;
 use actix_web::HttpResponse;
-use secrecy::ExposeSecret;
+// use secrecy::ExposeSecret;
 use secrecy::Secret;
 // use secret::ExposeSecret;
 use sqlx::PgPool;
@@ -12,8 +13,8 @@ use crate::authentication::AuthError;
 use crate::routes::error_chain_fmt;
 // use actix_web::http::StatusCode;
 // use actix_web::ResponseError;
-use crate::startup::HmacSecret;
-use hmac::{Hmac, Mac};
+// use crate::startup::HmacSecret;
+// use hmac::{Hmac, Mac};
 
 use actix_web::error::InternalError;
 
@@ -50,7 +51,7 @@ pub async fn login(
             };
             let response = HttpResponse::SeeOther()
                 .insert_header((LOCATION, "/login"))
-                .insert_header(("Set-Cookie", format!("_flash={e}")))
+                .cookie(Cookie::new("_flash", e.to_string()))
                 .finish();
             Err(InternalError::from_response(e, response))
         }
