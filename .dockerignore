@@ -17,3 +17,4 @@ scripts/
 migrations/
 
 postgresql_volume/
+redis_volume/
