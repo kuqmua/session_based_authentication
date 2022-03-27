@@ -4,6 +4,9 @@ by tutorial https://www.lpalmieri.com/posts/session-based-authentication-in-rust
 ### start deleopment 
 cargo watch -x check -x test -x "run"
 
+### pull redis image
+sudo docker pull redis
+
 ### launch Postgres
 sudo ./scripts/init_db.sh
 (sudo coz got pesmission denied error)
