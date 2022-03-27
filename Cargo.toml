@@ -16,7 +16,7 @@ name = "session_based_authentication"
 path = "src/main.rs"
 
 [dependencies]
-actix-session = "0.6"
+actix-session = { version = "0.6", features = ["redis-rs-tls-session"] }
 actix-web = "4"
 actix-web-lab = "0.12"
 argon2 = {version = "0.3", features = ["std"]}
