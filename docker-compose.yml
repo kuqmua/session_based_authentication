@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  postgres_sba__service:
+  postgres_sba_service:
     container_name: postgres_sba_container
     image: postgres:latest
     restart: always
@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./postgresql_volume:/data/db
+      - ./postgresql_volume/:/var/lib/postgresql/data/
     ports:
       - 5432:5432
   redis:
@@ -20,5 +20,3 @@ services:
       - 6379:6379
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
-volumes:
-  postgresql_volume:
