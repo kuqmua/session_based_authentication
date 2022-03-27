@@ -14,5 +14,11 @@ services:
       - ./postgresql_volume:/data/db
     ports:
       - 5432:5432
+  redis:
+    image: 'redis:latest'
+    ports:
+      - 6379:6379
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
 volumes:
   postgresql_volume:
