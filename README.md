@@ -65,3 +65,6 @@ thread 'actix-rt:worker' panicked at
 
 when you run cargo test after the refactoring.
 This is due to a limit enforced by the operating system on the maximum number of open file descriptors (including sockets) for each process - given that we are now running all tests as part of a single binary, we might be exceeding it. The limit is usually set to 1024, but you can raise it with ulimit -n X (e.g. ulimit -n 10000) to resolve the issue.
+
+### Error: I/O error: Permission denied (os error 13) fix
+sudo chown -R $(whoami) session_based_authentication/
