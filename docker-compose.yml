@@ -14,8 +14,10 @@ services:
       - ./postgresql_volume/:/var/lib/postgresql/data/
     ports:
       - 5432:5432
-  redis:
+  redis_sba_service:
+    container_name: redis_sba_container
     image: 'redis:latest'
+    restart: always
     ports:
       - 6379:6379
     environment:
