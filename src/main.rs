@@ -3,7 +3,7 @@ use session_based_authentication::startup::Application;
 use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
 
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> anyhow::Result<()> {
     let subscriber = get_subscriber(
         "session_based_authentication".into(),
         "info".into(),
