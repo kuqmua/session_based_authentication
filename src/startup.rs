@@ -60,6 +60,7 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
+use actix_web_flash_messages::FlashMessagesFramework;
 
 pub struct Application {
     port: u16,
@@ -131,9 +132,11 @@ pub fn run(
     let db_pool = Data::new(db_pool);
     let email_client = Data::new(email_client);
     let base_url = Data::new(ApplicationBaseUrl(base_url));
+    let message_framework = FlashMessagesFramework::builder(todo!()).build();
     let server = HttpServer::new(move || {
         App::new()
             // Middlewares are added using the `wrap` method on `App`
+            .wrap(message_framework.clone())
             .wrap(TracingLogger::default())
             .route("/login", web::get().to(login_form))
             .route("/login", web::post().to(login))
