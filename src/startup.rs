@@ -66,6 +66,7 @@ use secrecy::ExposeSecret;
 use actix_web::cookie::Key;
 use actix_session::SessionMiddleware;
 use actix_session::storage::RedisSessionStore;
+use crate::routes::admin_dashboard;
 
 pub struct Application {
     port: u16,
@@ -149,6 +150,7 @@ pub async fn run(
             .wrap(message_framework.clone())
             .wrap(SessionMiddleware::new(redis_store.clone(), secret_key.clone()))
             .wrap(TracingLogger::default())
+            .route("/admin/dashboard", web::get().to(admin_dashboard))
             .route("/login", web::get().to(login_form))
             .route("/login", web::post().to(login))
             .route("/", web::get().to(home))
