@@ -4,6 +4,9 @@ pub use home::*;
 pub mod login;
 pub use login::*;
 
+mod admin;
+pub use admin::*;
+
 mod health_check;
 pub mod newsletters;
 mod subscriptions;
