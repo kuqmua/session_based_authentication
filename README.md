@@ -68,3 +68,7 @@ This is due to a limit enforced by the operating system on the maximum number of
 
 ### Error: I/O error: Permission denied (os error 13) fix
 sudo chown -R $(whoami) session_based_authentication/
+
+### The script needs to be marked as executable and then launched:
+chmod +x ./scripts/init_redis.sh
+./script/init_redis.sh
