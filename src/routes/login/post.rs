@@ -49,10 +49,10 @@ pub async fn login(
                 .finish())
         }
         Err(e) => {
-            // let e = match e {
-            //     AuthError::InvalidCredentials(_) => LoginError::AuthError(e.into()),
-            //     AuthError::UnexpectedError(_) => LoginError::UnexpectedError(e.into()),
-            // };
+            let e = match e {
+                AuthError::InvalidCredentials(_) => LoginError::AuthError(e.into()),
+                AuthError::UnexpectedError(_) => LoginError::UnexpectedError(e.into()),
+            };
             // FlashMessage::error(e.to_string()).send();
             // let response = HttpResponse::SeeOther()
             //     .insert_header((LOCATION, "/login"))
