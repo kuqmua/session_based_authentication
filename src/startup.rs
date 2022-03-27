@@ -62,6 +62,8 @@ use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
 use actix_web_flash_messages::FlashMessagesFramework;
 use actix_web_flash_messages::storage::CookieMessageStore;
+use secrecy::ExposeSecret;
+use actix_web::cookie::Key;
 
 pub struct Application {
     port: u16,
@@ -133,7 +135,9 @@ pub fn run(
     let db_pool = Data::new(db_pool);
     let email_client = Data::new(email_client);
     let base_url = Data::new(ApplicationBaseUrl(base_url));
-    let message_store = CookieMessageStore::builder(todo!()).build();
+    let message_store = CookieMessageStore::builder(
+        Key::from(hmac_secret.expose_secret().as_bytes())
+    ).build();
     let message_framework = FlashMessagesFramework::builder(message_store).build();
     let server = HttpServer::new(move || {
         App::new()
