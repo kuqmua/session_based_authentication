@@ -5,6 +5,7 @@ use actix_web::http::header::ContentType;
 // use actix_web::web;
 use anyhow::Context;
 use sqlx::PgPool;
+use actix_web::http::header::LOCATION;
 
 // Return an opaque 500 while preserving the error's root cause for logging.
 fn e500<T>(e: T) -> actix_web::Error 
@@ -22,7 +23,9 @@ pub async fn admin_dashboard(
     {
         get_username(user_id, &pool).await.map_err(e500)?
     } else {
-        todo!()
+        return Ok(HttpResponse::SeeOther()
+        .insert_header((LOCATION, "/login"))
+        .finish());
     };
     Ok(HttpResponse::Ok()
         .content_type(ContentType::html())
