@@ -72,3 +72,6 @@ sudo chown -R $(whoami) session_based_authentication/
 ### The script needs to be marked as executable and then launched:
 chmod +x ./scripts/init_redis.sh
 ./script/init_redis.sh
+
+### see logs with cargo test
+cargo test -- --nocapture
