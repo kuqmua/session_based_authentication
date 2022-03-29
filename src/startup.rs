@@ -68,6 +68,7 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
 use crate::routes::{change_password, change_password_form};
+use crate::routes::log_out;
 
 pub struct Application {
     port: u16,
@@ -155,6 +156,7 @@ pub async fn run(
                 secret_key.clone(),
             ))
             .wrap(TracingLogger::default())
+            .route("/admin/logout", web::post().to(log_out))
             .route("/admin/password", web::get().to(change_password_form))
             .route("/admin/password", web::post().to(change_password))
             .route("/admin/dashboard", web::get().to(admin_dashboard))
