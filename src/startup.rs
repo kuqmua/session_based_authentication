@@ -69,6 +69,8 @@ use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
 use crate::routes::{change_password, change_password_form};
 use crate::routes::log_out;
+use crate::authentication::reject_anonymous_users;
+use actix_web_lab::middleware::from_fn;
 
 pub struct Application {
     port: u16,
@@ -166,6 +168,7 @@ pub async fn run(
             .route("/newsletters", web::post().to(publish_newsletter))
             .service(
                 web::scope("/admin")
+                .wrap(from_fn(reject_anonymous_users))
                     .route("/dashboard", web::get().to(admin_dashboard))
                     .route("/password", web::get().to(change_password_form))
                     .route("/password", web::post().to(change_password))
