@@ -14,7 +14,7 @@ pub async fn change_password_form(session: TypedSession, flash_messages: Incomin
         writeln!(msg_html, "<p><i>{}</i></p>", m.content()).unwrap();
     }
     Ok(HttpResponse::Ok().content_type(ContentType::html()).body(
-        r#"<!DOCTYPE html>
+        format!(r#"<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -52,5 +52,5 @@ pub async fn change_password_form(session: TypedSession, flash_messages: Incomin
     <p><a href="/admin/dashboard">&lt;- Back</a></p>
 </body>
 </html>"#,
-    ))
+    )))
 }

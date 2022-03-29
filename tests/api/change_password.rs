@@ -45,7 +45,7 @@ async fn new_password_fields_must_match() {
         "password": &app.test_user.password
     }))
     .await;
-
+    
     // Act - Part 2 - Try to change password
     let response = app
         .post_change_password(&serde_json::json!({
@@ -59,8 +59,7 @@ async fn new_password_fields_must_match() {
     // Act - Part 3 - Follow the redirect
     let html_page = app.get_change_password_html().await;
     assert!(html_page.contains(
-        "<p><i>You entered two different new passwords - \
-         the field values must match.</i></p>"
+        "<p><i>You entered two different new passwords - the field values must match.</i></p>"
     ));
 }
 
