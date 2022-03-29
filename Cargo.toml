@@ -18,7 +18,7 @@ path = "src/main.rs"
 [dependencies]
 actix-session = { version = "0.6", features = ["redis-rs-tls-session"] }
 actix-web = "4"
-actix-web-lab = "0.12"
+actix-web-lab = "0.15"
 argon2 = {version = "0.3", features = ["std"]}
 base64 = "0.13"
 env_logger = "0.9"
