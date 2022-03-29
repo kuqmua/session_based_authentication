@@ -6,7 +6,7 @@ use secrecy::ExposeSecret;
 use actix_web_flash_messages::FlashMessage;
 use crate::routes::admin::dashboard::get_username;
 use sqlx::PgPool;
-use crate::authentication::{validate_credentials, AuthError, Credentials};
+use crate::authentication::password::{validate_credentials, AuthError, Credentials};
 use actix_web::error::InternalError;
 use uuid::Uuid;
 
