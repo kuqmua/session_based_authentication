@@ -17,3 +17,15 @@ impl TryFrom<String> for IdempotencyKey {
         Ok(Self(s))
     }
 }
+
+impl From<IdempotencyKey> for String {
+    fn from(k: IdempotencyKey) -> Self {
+        k.0
+    }
+}
+
+impl AsRef<str> for IdempotencyKey {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
