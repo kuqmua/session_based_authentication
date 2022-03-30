@@ -8,7 +8,6 @@ mod admin;
 pub use admin::*;
 
 mod health_check;
-pub mod newsletters;
 mod subscriptions;
 mod subscriptions_confirm;
 
