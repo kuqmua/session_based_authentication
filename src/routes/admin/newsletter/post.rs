@@ -9,6 +9,7 @@ use anyhow::Context;
 use sqlx::PgPool;
 use crate::idempotency::IdempotencyKey;
 use crate::utils::e400;
+use crate::idempotency::get_saved_response;
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
@@ -29,8 +30,21 @@ pub async fn publish_newsletter(
     pool: web::Data<PgPool>,
     email_client: web::Data<EmailClient>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let FormData { title, text_content, html_content, idempotency_key } = form.0;
+    let user_id = user_id.into_inner();
+    let FormData {
+        title,
+        text_content,
+        html_content,
+        idempotency_key,
+    } = form.0;
     let idempotency_key: IdempotencyKey = idempotency_key.try_into().map_err(e400)?;
+    // Return early if we have a saved response in the database 
+    if let Some(saved_response) = get_saved_response(&pool, &idempotency_key, *user_id)
+        .await
+        .map_err(e500)?
+    {
+        return Ok(saved_response);
+    }
     let subscribers = get_confirmed_subscribers(&pool).await.map_err(e500)?;
     for subscriber in subscribers {
         match subscriber {
