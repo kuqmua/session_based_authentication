@@ -113,5 +113,30 @@ pub async fn try_processing(
     idempotency_key: &IdempotencyKey, 
     user_id: Uuid
 ) -> Result<NextAction, anyhow::Error> {
-    todo!()
+    let n_inserted_rows = sqlx::query!(
+        r#"
+        INSERT INTO idempotency (
+            user_id, 
+            idempotency_key,
+            created_at
+        ) 
+        VALUES ($1, $2, now()) 
+        ON CONFLICT DO NOTHING
+        "#,
+        user_id,
+        idempotency_key.as_ref()
+    )
+    .execute(pool)
+    .await?
+    .rows_affected();
+    if n_inserted_rows > 0 {
+        Ok(NextAction::StartProcessing)
+    } else {
+        let saved_response = get_saved_response(pool, idempotency_key, user_id)
+            .await?
+            .ok_or_else(|| 
+                anyhow::anyhow!("We expected a saved response, we didn't find it")
+            )?;
+        Ok(NextAction::ReturnSavedResponse(saved_response))
+    }
 }
