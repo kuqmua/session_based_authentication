@@ -2,6 +2,7 @@ use super::IdempotencyKey;
 use actix_web::HttpResponse;
 use sqlx::PgPool;
 use uuid::Uuid;
+use actix_web::http::StatusCode;
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "header_pair")]
@@ -31,5 +32,16 @@ pub async fn get_saved_response(
     )
     .fetch_optional(pool)
     .await?;
-    todo!()
+    if let Some(r) = saved_response {
+        let status_code = StatusCode::from_u16(
+            r.response_status_code.try_into()?
+        )?;
+        let mut response = HttpResponse::build(status_code);
+        for HeaderPairRecord { name, value } in r.response_headers {
+            response.append_header((name, value));
+        }
+        Ok(Some(response.body(r.response_body)))
+    } else {
+        Ok(None)
+    }
 }
