@@ -3,6 +3,13 @@ use actix_web::HttpResponse;
 use sqlx::PgPool;
 use uuid::Uuid;
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "header_pair")]
+struct HeaderPairRecord {
+    name: String,
+    value: Vec<u8>,
+}
+
 pub async fn get_saved_response(
     pool: &PgPool,
     idempotency_key: &IdempotencyKey,
