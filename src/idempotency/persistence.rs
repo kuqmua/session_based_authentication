@@ -51,18 +51,27 @@ pub async fn save_response(
     pool: &PgPool,
     idempotency_key: &IdempotencyKey,
     user_id: Uuid,
-    http_response: &HttpResponse,
-) -> Result<(), anyhow::Error> {
-    let status_code = http_response.status().as_u16() as i16;//u16 max 65535, i16 max 32767, why its compiles?
+    http_response: HttpResponse,
+) -> Result<HttpResponse, anyhow::Error> {
+    let (response_head, body) = http_response.into_parts();
+    // `MessageBody::Error` is not `Send` + `Sync`, 
+    // therefore it doesn't play nicely with `anyhow`
+    let body = to_bytes(body).await.map_err(|e| anyhow::anyhow!("{}", e))?;
+    let status_code = response_head.status().as_u16() as i16;
     let headers = {
-        let mut h = Vec::with_capacity(http_response.headers().len());
-        for (name, value) in http_response.headers().iter() {
+        let mut h = Vec::with_capacity(response_head.headers().len());
+        for (name, value) in response_head.headers().iter() {
             let name = name.as_str().to_owned();
             let value = value.as_bytes().to_owned();
             h.push(HeaderPairRecord { name, value });
         }
         h
     };
-    let body = to_bytes(http_response.body()).await.unwrap();
-    todo!()
+
+    // TODO: SQL query
+
+    // We need `.map_into_boxed_body` to go from 
+    // `HttpResponse<Bytes>` to `HttpResponse<BoxBody>`
+    let http_response = response_head.set_body(body).map_into_boxed_body();
+    Ok(http_response)
 }
