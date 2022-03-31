@@ -68,7 +68,7 @@ pub async fn save_response(
         h
     };
 
-    sqlx::query!(
+    sqlx::query_unchecked!(
         r#"
         INSERT INTO idempotency (
             user_id, 
