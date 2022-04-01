@@ -1,7 +1,11 @@
 use crate::helpers::{assert_is_redirect_to, spawn_app, ConfirmationLinks, TestApp};
-use wiremock::matchers::{any, method, path};
-use wiremock::{Mock, ResponseTemplate};
+use fake::faker::internet::en::SafeEmail;
+use fake::faker::name::en::Name;
+use fake::Fake;
 use std::time::Duration;
+use wiremock::matchers::{any, method, path};
+use wiremock::MockBuilder;
+use wiremock::{Mock, ResponseTemplate};
 
 async fn create_unconfirmed_subscriber(app: &TestApp) -> ConfirmationLinks {
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
@@ -154,9 +158,7 @@ async fn newsletter_creation_is_idempotent() {
 
     // Act - Part 2 - Follow the redirect
     let html_page = app.get_publish_newsletter_html().await;
-    assert!(
-        html_page.contains("<p><i>The newsletter issue has been published!</i></p>")
-    );
+    assert!(html_page.contains("<p><i>The newsletter issue has been published!</i></p>"));
 
     // Act - Part 3 - Submit newsletter form **again**
     let response = app.post_publish_newsletter(&newsletter_request_body).await;
@@ -164,9 +166,7 @@ async fn newsletter_creation_is_idempotent() {
 
     // Act - Part 4 - Follow the redirect
     let html_page = app.get_publish_newsletter_html().await;
-    assert!(
-        html_page.contains("<p><i>The newsletter issue has been published!</i></p>")
-    );
+    assert!(html_page.contains("<p><i>The newsletter issue has been published!</i></p>"));
 
     // Mock verifies on Drop that we have sent the newsletter email **once**
 }
@@ -180,7 +180,7 @@ async fn concurrent_form_submission_is_handled_gracefully() {
 
     Mock::given(path("/email"))
         .and(method("POST"))
-        // Setting a long delay to ensure that the second request 
+        // Setting a long delay to ensure that the second request
         // arrives before the first one completes
         .respond_with(ResponseTemplate::new(200).set_delay(Duration::from_secs(2)))
         .expect(1)
@@ -199,7 +199,14 @@ async fn concurrent_form_submission_is_handled_gracefully() {
     let (response1, response2) = tokio::join!(response1, response2);
 
     assert_eq!(response1.status(), response2.status());
-    assert_eq!(response1.text().await.unwrap(), response2.text().await.unwrap());
+    assert_eq!(
+        response1.text().await.unwrap(),
+        response2.text().await.unwrap()
+    );
 
     // Mock verifies on Drop that we have sent the newsletter email **once**
+}
+
+fn when_sending_an_email() -> MockBuilder {
+    Mock::given(path("/email")).and(method("POST"))
 }
