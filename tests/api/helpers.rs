@@ -3,6 +3,7 @@ use argon2::{Algorithm, Argon2, Params, PasswordHasher, Version};
 use once_cell::sync::Lazy;
 use session_based_authentication::configuration::{get_configuration, DatabaseSettings};
 use session_based_authentication::email_client::EmailClient;
+use session_based_authentication::issue_delivery_worker::{try_execute_task, ExecutionOutcome};
 use session_based_authentication::startup::{get_connection_pool, Application};
 use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
 use sqlx::{Connection, Executor, PgConnection, PgPool};
@@ -39,6 +40,17 @@ pub struct ConfirmationLinks {
 }
 
 impl TestApp {
+    pub async fn dispatch_all_pending_emails(&self) {
+        loop {
+            if let ExecutionOutcome::EmptyQueue =
+                try_execute_task(&self.db_pool, &self.email_client)
+                    .await
+                    .unwrap()
+            {
+                break;
+            }
+        }
+    }
     pub async fn post_subscriptions(&self, body: String) -> reqwest::Response {
         self.api_client
             .post(&format!("{}/subscriptions", &self.address))
