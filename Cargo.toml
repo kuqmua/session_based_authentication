@@ -21,7 +21,7 @@ actix-web = "4"
 actix-web-flash-messages = {version = "0.3", features = ["cookies"]}
 actix-web-lab = "0.15"
 anyhow = "1"
-argon2 = {version = "0.3", features = ["std"]}
+argon2 = {version = "0.4.0", features = ["std"]}
 base64 = "0.13"
 chrono = "0.4.15"
 config = "0.11"
