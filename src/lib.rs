@@ -12,17 +12,12 @@ pub mod telemetry;
 pub mod utils;
 
 use actix_web::dev::Server;
-use actix_web::{web, App, HttpResponse, HttpServer}; //HttpRequest, Responder
+use actix_web::{web, App, HttpResponse, HttpServer};
 use std::net::TcpListener;
 
 async fn health_check() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
-
-// async fn greet(req: HttpRequest) -> impl Responder {
-//     let name = req.match_info().get("name").unwrap_or("World");
-//     format!("Hello {}!", &name)
-// }
 
 #[derive(serde::Deserialize)]
 struct FormData {
@@ -42,6 +37,5 @@ pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     })
     .listen(listener)?
     .run();
-    // No .await here!
     Ok(server)
 }
