@@ -1,14 +1,9 @@
+use crate::telemetry::spawn_blocking_with_tracing;
 use anyhow::Context;
-// use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use argon2::password_hash::SaltString;
+use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use secrecy::{ExposeSecret, Secret};
 use sqlx::PgPool;
-use argon2::password_hash::SaltString;
-use argon2::{
-    Algorithm, Argon2, Params, PasswordHash, 
-    PasswordHasher, PasswordVerifier, Version
-};
-
-use crate::telemetry::spawn_blocking_with_tracing;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AuthError {
@@ -55,20 +50,17 @@ pub async fn validate_credentials(
         CWOrkoo7oJBQ/iyh7uJ0LO2aLEfrHwTWllSAxT0zRno"
             .to_string(),
     );
-
     if let Some((stored_user_id, stored_password_hash)) =
         get_stored_credentials(&credentials.username, pool).await?
     {
         user_id = Some(stored_user_id);
         expected_password_hash = stored_password_hash;
     }
-
     spawn_blocking_with_tracing(move || {
         verify_password_hash(expected_password_hash, credentials.password)
     })
     .await
     .context("Failed to spawn blocking task.")??;
-
     user_id
         .ok_or_else(|| anyhow::anyhow!("Unknown username."))
         .map_err(AuthError::InvalidCredentials)
@@ -84,7 +76,6 @@ fn verify_password_hash(
 ) -> Result<(), AuthError> {
     let expected_password_hash = PasswordHash::new(expected_password_hash.expose_secret())
         .context("Failed to parse hash in PHC string format.")?;
-
     Argon2::default()
         .verify_password(
             password_candidate.expose_secret().as_bytes(),
@@ -94,16 +85,13 @@ fn verify_password_hash(
         .map_err(AuthError::InvalidCredentials)
 }
 
-
 #[tracing::instrument(name = "Change password", skip(password, pool))]
 pub async fn change_password(
     user_id: uuid::Uuid,
     password: Secret<String>,
     pool: &PgPool,
 ) -> Result<(), anyhow::Error> {
-    let password_hash = spawn_blocking_with_tracing(
-            move || compute_password_hash(password)
-        )
+    let password_hash = spawn_blocking_with_tracing(move || compute_password_hash(password))
         .await?
         .context("Failed to hash password")?;
     sqlx::query!(
@@ -121,9 +109,7 @@ pub async fn change_password(
     Ok(())
 }
 
-fn compute_password_hash(
-    password: Secret<String>
-) -> Result<Secret<String>, anyhow::Error> {
+fn compute_password_hash(password: Secret<String>) -> Result<Secret<String>, anyhow::Error> {
     let salt = SaltString::generate(&mut rand::thread_rng());
     let password_hash = Argon2::new(
         Algorithm::Argon2id,
