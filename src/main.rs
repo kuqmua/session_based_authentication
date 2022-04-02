@@ -2,6 +2,8 @@ use session_based_authentication::configuration::get_configuration;
 use session_based_authentication::issue_delivery_worker::run_worker_until_stopped;
 use session_based_authentication::startup::Application;
 use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
+use std::fmt::{Debug, Display};
+use tokio::task::JoinError;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

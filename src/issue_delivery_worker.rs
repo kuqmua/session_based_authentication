@@ -1,10 +1,29 @@
-use crate::domain::SubscriberEmail;
-use crate::email_client::EmailClient;
 use crate::{configuration::Settings, startup::get_connection_pool};
+use crate::{domain::SubscriberEmail, email_client::EmailClient};
 use sqlx::{PgPool, Postgres, Transaction};
 use std::time::Duration;
 use tracing::{field::display, Span};
 use uuid::Uuid;
+
+pub async fn run_worker_until_stopped(configuration: Settings) -> Result<(), anyhow::Error> {
+    let connection_pool = get_connection_pool(&configuration.database);
+    let email_client = configuration.email_client.client();
+    worker_loop(connection_pool, email_client).await
+}
+
+async fn worker_loop(pool: PgPool, email_client: EmailClient) -> Result<(), anyhow::Error> {
+    loop {
+        match try_execute_task(&pool, &email_client).await {
+            Ok(ExecutionOutcome::EmptyQueue) => {
+                tokio::time::sleep(Duration::from_secs(10)).await;
+            }
+            Err(_) => {
+                tokio::time::sleep(Duration::from_secs(1)).await;
+            }
+            Ok(ExecutionOutcome::TaskCompleted) => {}
+        }
+    }
+}
 
 pub enum ExecutionOutcome {
     TaskCompleted,
@@ -31,7 +50,6 @@ pub async fn try_execute_task(
     Span::current()
         .record("newsletter_issue_id", &display(issue_id))
         .record("subscriber_email", &display(&email));
-    // TODO: send email
     match SubscriberEmail::parse(email.clone()) {
         Ok(email) => {
             let issue = get_issue(pool, issue_id).await?;
@@ -48,7 +66,7 @@ pub async fn try_execute_task(
                     error.cause_chain = ?e,
                     error.message = %e,
                     "Failed to deliver issue to a confirmed subscriber. \
-                     Skipping.",
+                        Skipping.",
                 );
             }
         }
@@ -57,7 +75,7 @@ pub async fn try_execute_task(
                 error.cause_chain = ?e,
                 error.message = %e,
                 "Skipping a confirmed subscriber. \
-                 Their stored contact details are invalid",
+                    Their stored contact details are invalid",
             );
         }
     }
@@ -137,38 +155,4 @@ async fn get_issue(pool: &PgPool, issue_id: Uuid) -> Result<NewsletterIssue, any
     .fetch_one(pool)
     .await?;
     Ok(issue)
-}
-
-async fn worker_loop(pool: PgPool, email_client: EmailClient) -> Result<(), anyhow::Error> {
-    loop {
-        match try_execute_task(&pool, &email_client).await {
-            Ok(ExecutionOutcome::EmptyQueue) => {
-                tokio::time::sleep(Duration::from_secs(10)).await;
-            }
-            Err(_) => {
-                tokio::time::sleep(Duration::from_secs(1)).await;
-            }
-            Ok(ExecutionOutcome::TaskCompleted) => {}
-        }
-    }
-}
-
-pub async fn run_worker_until_stopped(configuration: Settings) -> Result<(), anyhow::Error> {
-    let connection_pool = get_connection_pool(&configuration.database);
-    // Use helper function!
-    let email_client = configuration.email_client.client();
-    worker_loop(connection_pool, email_client).await
-    // let connection_pool = get_connection_pool(&configuration.database);
-    // let sender_email = configuration
-    //     .email_client
-    //     .sender()
-    //     .expect("Invalid sender email address.");
-    // let timeout = configuration.email_client.timeout();
-    // let email_client = EmailClient::new(
-    //     configuration.email_client.base_url,
-    //     sender_email,
-    //     configuration.email_client.authorization_token,
-    //     timeout,
-    // );
-    // worker_loop(connection_pool, email_client).await
 }
