@@ -1,6 +1,7 @@
 use crate::domain::SubscriberEmail;
 use crate::email_client::EmailClient;
 use sqlx::{PgPool, Postgres, Transaction};
+use std::time::Duration;
 use tracing::{field::display, Span};
 use uuid::Uuid;
 
@@ -124,4 +125,12 @@ async fn get_issue(pool: &PgPool, issue_id: Uuid) -> Result<NewsletterIssue, any
     .fetch_one(pool)
     .await?;
     Ok(issue)
+}
+
+async fn worker_loop(pool: PgPool, email_client: EmailClient) -> Result<(), anyhow::Error> {
+    loop {
+        if try_execute_task(&pool, &email_client).await.is_err() {
+            tokio::time::sleep(Duration::from_secs(1)).await;
+        }
+    }
 }
