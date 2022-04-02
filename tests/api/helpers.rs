@@ -1,12 +1,13 @@
 use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, Version};
 use once_cell::sync::Lazy;
+use session_based_authentication::configuration::{get_configuration, DatabaseSettings};
+use session_based_authentication::email_client::EmailClient;
+use session_based_authentication::startup::{get_connection_pool, Application};
+use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 use wiremock::MockServer;
-use session_based_authentication::configuration::{get_configuration, DatabaseSettings};
-use session_based_authentication::startup::{get_connection_pool, Application};
-use session_based_authentication::telemetry::{get_subscriber, init_subscriber};
 
 // Ensure that the `tracing` stack is only initialised once using `once_cell`
 static TRACING: Lazy<()> = Lazy::new(|| {
@@ -28,6 +29,7 @@ pub struct TestApp {
     pub email_server: MockServer,
     pub test_user: TestUser,
     pub api_client: reqwest::Client,
+    pub email_client: EmailClient,
 }
 
 /// Confirmation links embedded in the request to the email API.
@@ -206,6 +208,7 @@ pub async fn spawn_app() -> TestApp {
         email_server,
         test_user: TestUser::generate(),
         api_client: client,
+        email_client: configuration.email_client.client(),
     };
 
     test_app.test_user.store(&test_app.db_pool).await;
